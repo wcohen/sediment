@@ -9,6 +9,7 @@ Source0:	%{name}-%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires:  python-sphinx
+BuildArch: noarch
 
 %description
 sediment is a set of programs that allow one reorder the functions in
