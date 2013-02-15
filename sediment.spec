@@ -9,6 +9,7 @@ Source0:	%{name}-%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires:  python-sphinx
+Requires: gcc-python3-plugin
 BuildArch: noarch
 
 %description
@@ -34,6 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/gv2link.py
 %{_bindir}/perf2gv.py
+%{_bindir}/write-dot-callgraph.py
 %doc
 
 
