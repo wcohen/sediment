@@ -197,6 +197,8 @@ htmlhelp_basename = 'sedimentdoc'
 latex_documents = [
   ('index', 'sediment.tex', u'sediment Documentation',
    u'William Cohen', 'manual'),
+  ('pop', 'pop.tex', u'sediment principals of operation',
+   u'William Cohen', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

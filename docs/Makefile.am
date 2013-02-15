@@ -1,7 +1,7 @@
 # Makefile for Sphinx documentation
 #
 # FIXME this is probably not the right way to keep these files in the dist
-EXTRA_DIST = conf.py index.rst
+EXTRA_DIST = conf.py index.rst pop.rst
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
