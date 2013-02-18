@@ -18,7 +18,7 @@ pages that must be pulled in to start the program.
 SGI's CORD reordering program had a 12% to 30% reduction in
 instruction memory usage for the reordered libraries (mentioned in
 1995 Usenix paper, [Ho95]_). More recently Mozilla developers have worked
-on reducing startup latency with function reordering [Glek2010]_ with a
+on reducing startup latency with function reordering [Glek10]_ with a
 30% reduction in startup time.
 
 
@@ -39,8 +39,8 @@ Processors map virtual memory addresses used in programs into physical
 addresses using multiple levels of page tables. Doing chained accesses
 through the multiple level of page tables is slow.
 Thus, every modern processor uses Translation Lookaside Buffers (TLB)
-to cache recent page mappings. Typically there are less than a
-thousand entries in each processor's TLB.
+to cache recent page mappings. Typically there are between 32 and 1024
+entries in each processor's TLB.
 If each page is 4KB in size each processor would is limited to
 addressing about 4MB of physical memory without a TLB update. If a TLB
 update has be performed, it can cost ten's of processors clock cycles
@@ -60,8 +60,8 @@ Modern processors now have performance monitoring units (PMUs) that
 allows measurement of hardware events such as TLB misses and paths
 taken through code.
 
-The perf tool in recent kernels provides access to this data.
-It should be possible to provide information about which functions
+The perf tool in recent kernels provides access to this data and it 
+is possible to provide information about which functions
 frequently call each other in code.
 Current versions of GCC and Binutils in Linux have means of ordering
 the functions in an executable.
@@ -177,21 +177,40 @@ following command should be able to collect the data on Fedora 17::
 
   perf record -e branches:u -j any_call executable_under_test
 
-The "perf report" will generate a report that include the source and
+The "perf report" command will generate a report that include the source and
 destinations of the calls. As a quick proof of concept, a python
 script perf2gv.py is used to convert the output of "perf report" into
 a .gv file. The script doesn't on C++ code because of the spaces in
-the function signature's argument list of the "perf report" output.
+the method's signature argument list of the "perf report" output.
 
-Some examples .gv and the resulting .svg files are available from
-http://people.redhat.com/wcohen/ldreorder. A graph of postgres pgbench
-run has been generated,
-http://people.redhat.com/wcohen/ldreorder/postgres8.svg. Each elipse
-in the graph is a function. The functions are grouped together in a
-box representing the executable. The edges show the calls that were
-sampled during the run. The values for an edge can range from 0
-to 1. A value of 0.25 on an edge would indicate that a quarter of the
-total samples were fore that edge.  Managing the data
+The examples directory in the sediment package contains examples of
+the various outputs.
+The
+:download:`postgres12.out <../examples/postgres12.out>` is the raw output from
+"perf report".
+The script perf2gv.py converted the raw perf output into
+:download:`postgres12.gv <../examples/postgres12.gv>`, a graphviz output.
+The
+:download:`postgres12.gv <../examples/postgres12.gv>` file can be converted
+into a list of function in the desired link order with the gv2link.py
+script as shown in
+:download:`postgres12.link <../examples/postgres12.link>`
+The graphviz output file can also be converted into a viewable callgraph with::
+
+  dot -Tsvg -o postgres12.svg postgres12.gv
+
+The resulting in
+:download:`postgres12.svg <../examples/postgres12.svg>` , a graphiv
+viewable in a many webbrowsers.
+Each elipse in the graph is a function.
+The functions are grouped together in a box representing the executable.
+The edges show the calls that were sampled during the run.
+The values for an edge can range from 0 to 1.
+A value of 0.25 on an edge would indicate that a quarter of the
+total samples were fore that edge.
+
+Managing the data
+=================
 
 Scripts will be needed to package the information in a form that is
 suitable for emailing and inclusion in source rpm files::
@@ -300,8 +319,8 @@ reductions in iTLB updates.
 References
 ==========
 
-.. [GCC10] plugins, http://gcc.gnu.org/wiki/plugins 
-.. [Ho95] W. Wilson Ho, et. al. Optimizing the Performance of Dynamically-Linked Programs http://www.usenix.org/publications/library/proceedings/neworl/ho.html 
-.. [Gor10] Mel Gorman, Huge pages part 5: A deeper look at TLBs and costs March 23, 2010 http://lwn.net/Articles/379748/ 
+.. [GCC10] plugins, October 1, 2010, http://gcc.gnu.org/wiki/plugins 
 .. [Glek10] Tarak Glek, Linux: How to Make Startup Suck Less (Also Reduce Memory Usage!) http://blog.mozilla.org/tglek/2010/04/05/linux-how-to-make-startup-suck-less-and-reduce-memory-usage/ 
+.. [Gor10] Mel Gorman, Huge pages part 5: A deeper look at TLBs and costs March 23, 2010 http://lwn.net/Articles/379748/ 
+.. [Ho95] W. Wilson Ho, et. al. Optimizing the Performance of Dynamically-Linked Programs http://www.usenix.org/publications/library/proceedings/neworl/ho.html 
 .. [Mal12] David Malcolm, GCC Python Plugin https://fedorahosted.org/gcc-python-plugin/ 
