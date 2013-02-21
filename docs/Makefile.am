@@ -8,6 +8,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
+DOC_INSTALL_DIR = $(DESTDIR)$(docdir)
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -15,6 +16,10 @@ PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
+
+install-data-hook:
+	$(MKDIR_P) $(DOC_INSTALL_DIR)/html
+	$(INSTALL_DATA) _build/html/*.* _build/html/_static/*  _build/html/_downloads/* $(DOC_INSTALL_DIR)/html
 
 all: html man
 

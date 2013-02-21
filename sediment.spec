@@ -36,8 +36,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/gv2link.py
 %{_bindir}/perf2gv.py
 %{_bindir}/write-dot-callgraph.py
-%doc
-
+%doc %{_datadir}/doc/%{name}/html
+%doc README AUTHORS NEWS COPYING
 
 
 %changelog
