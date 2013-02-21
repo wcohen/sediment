@@ -9,7 +9,7 @@ Source0:	%{name}-%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires:  python-sphinx
-Requires: gcc-python3-plugin
+#Requires: gcc-python3-plugin
 BuildArch: noarch
 
 %description
