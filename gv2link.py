@@ -23,6 +23,7 @@ import sys
 import gv
 import fileinput
 import heapq
+import re
 
 def read_graph():
     text =  ''
@@ -43,6 +44,12 @@ def simple_order(in_graph):
         sbg = gv.nextsubg(in_graph, sbg)
     return func_order
 
+def extract_weight(label):
+    # some munging of input to allow use of gprof2dot data
+    label = re.sub(r'\d+\.\d*%\\n', "", label)
+    label = re.sub(r'\D', "", label)
+    weight = float(label)
+    return weight
 
 def group_order(in_graph):
     # put edges in priority queue
@@ -52,7 +59,8 @@ def group_order(in_graph):
         e = gv.firstedge(sbg)
         while gv.ok(e):
             # add edge to priority queue
-            weight = - float(gv.getv(e, "label"))
+            label = gv.getv(e, "label")
+            weight = - extract_weight(label)
             heapq.heappush(heap, (weight, e))
             e = gv.nextedge(sbg, e)
         sbg = gv.nextsubg(in_graph, sbg)
@@ -61,7 +69,8 @@ def group_order(in_graph):
     e = gv.firstedge(in_graph)
     while gv.ok(e):
         # add edge to priority queue
-        weight = - float(gv.getv(e, "label"))
+        label = gv.getv(e, "label")
+        weight = - extract_weight(label)
         heapq.heappush(heap, (weight, e))
         e = gv.nextedge(in_graph, e)
 
