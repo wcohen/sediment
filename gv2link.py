@@ -34,6 +34,11 @@ def read_graph():
 def simple_order(in_graph):
     # just spit out list of nodes in some order
     func_order = []
+    n = gv.firstnode(in_graph)
+    while gv.ok(n):
+        name = gv.nameof(n)
+        func_order.append(name)
+        n = gv.nextnode(in_graph, n)
     sbg = gv.firstsubg(in_graph)
     while gv.ok(sbg):
         n = gv.firstnode(sbg)
