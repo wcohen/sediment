@@ -96,8 +96,8 @@ def group_order(in_graph):
             func_member[head] = super_node_rename[head] = sn
             super_node[sn] = [tail]
             super_node[sn].append(head)
-        elif (head in func_member) and (tail in func_member):
-            # print "combine supernode"
+        elif (head in func_member) and (tail in func_member) and super_node_rename[head] != super_node_rename[tail]:
+            # print "combine supernodes"
             super_node[super_node_rename[tail]].extend(super_node[super_node_rename[head]])
             super_node[super_node_rename[head]] = []
             super_node_rename[head] = super_node_rename[tail]
