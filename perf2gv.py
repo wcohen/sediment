@@ -20,6 +20,7 @@
 # has callgraph information into a graphviz output
 
 import fileinput
+import re
 
 def header():
     result = 'digraph Callgraph {\n'
@@ -29,6 +30,10 @@ def header():
 def footer():
     result = '}\n'
     return result
+
+# func@plt should just be treated the same as a direct call the func
+def extract_func(func):
+    return re.sub(r'@plt', "", func)
 
 def body(threshold, const):
     #munge the output to give a call graph information
@@ -45,9 +50,9 @@ def body(threshold, const):
         weight = float(element[0].replace("%","")) / 100.00 * const
         if weight > threshold:
             caller_bin =  element[2]
-            caller = element[4]
+            caller = extract_func(element[4])
             callee_bin =  element[5]
-            callee = element[7]
+            callee = extract_func(element[7])
             counts[('  "%s" -> "%s" ' % (caller, callee))] = weight
             # add function to subgraph
             if subgraphs.has_key(caller_bin) :
