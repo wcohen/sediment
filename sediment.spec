@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering toolset
 
 License:	GPLv3+
@@ -10,6 +10,7 @@ Source0:	%{name}-%{version}.tar.gz
 # sphinx is used for building documentation:
 BuildRequires:  python-sphinx
 #Requires: gcc-python3-plugin
+Requires: graphviz-python
 BuildArch: noarch
 
 %description
@@ -41,5 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 18 2014 William Cohen <wcohen@redhat.com> 0.1-2
+- Add graphviz-python requires.
+
 * Thu Feb 14 2013 William Cohen <wcohen@redhat.com> 0.1-1
 - Initial release
