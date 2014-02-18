@@ -133,6 +133,6 @@ def print_order(order):
     print ('.text.*')
 
 the_graph = read_graph()
-gv.write(the_graph, "/tmp/output.log")
+#gv.write(the_graph, "/tmp/output.log")
 link_order = gen_order(the_graph)
 print_order(link_order)
