@@ -1,6 +1,6 @@
 Name:		sediment
-Version:	0.1
-Release:	2%{?dist}
+Version:	0.2
+Release:	1%{?dist}
 Summary:	A function reordering toolset
 
 License:	GPLv3+
@@ -42,6 +42,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 19 2014 William Cohen <wcohen@redhat.com> 0.2-1
+- Bump version to 0.2.
+
 * Tue Feb 18 2014 William Cohen <wcohen@redhat.com> 0.1-2
 - Add graphviz-python requires.
 

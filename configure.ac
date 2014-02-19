@@ -1,4 +1,4 @@
-AC_INIT([sediment], [0.1], [wcohen@redhat.com])
+AC_INIT([sediment], [0.2], [wcohen@redhat.com])
 
 
 AM_INIT_AUTOMAKE
