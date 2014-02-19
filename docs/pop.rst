@@ -271,24 +271,31 @@ Newer versions of binutils include the gold linker which has a option
 to specify the order of functions in the executable, "--section-ordering-file".
 For thise work one will need to set the default linker
 (ld) to the gold linker (ld.gold).
-The RPM macros will be modified usning a .rpmmacro file with::
+The RPM macros will be modified using a .rpmmacro file with::
 
   %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?pgo:-ffunction-sections -fdata-sections}
-  %__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?pgo:-Wl,"--section-ordering-file,%{pgo_file}"}
+  %__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
+  %__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}
 
-The .rpmmacro file also has a definition for %dist to note whether the
+The .rpmmacro file includes a definition for %dist to note whether the
 rpm is a normal rpm or a Program Guided Optimization (PGO) rpm::
 
-  %dist .fc18%{?pgo:_pgo}
+  %dist .fc19%{?pgo:_pgo}
 
-Currently, the source RPMs files include a source file to specify the link
-order and a define for pgo_file::
+Currently, the source RPMs files include a call graph file used to compute
+the link order and a define for pgo_file::
 
-  Source16: postgresql.link
+  Source17: postgresql.gv
+  %global call_graph %{SOURCE17}
 
-  %{?pgo:%global pgo_file %{SOURCE16}}
+The .rpmmacro file adds the following line to the %__build_pre macro
+to generate the link order::
 
-And the building with the function reordering is enabled with::
+    %{?pgo: gv2link.py < %{call_graph} > %{__global_link_order} }
+
+All of the the macros above are contained in :download:`.rpmmacros
+<.rpmmacros>`.  The building with the function reordering is enabled
+with::
 
   rpmbuild -ba --define "pgo 1" <spec_file>
 

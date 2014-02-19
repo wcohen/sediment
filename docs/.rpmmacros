@@ -1,0 +1,34 @@
+%__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?pgo:-ffunction-sections -fdata-sections}
+%__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
+%__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}
+%dist .fc19%{?pgo:_pgo}
+
+%___build_pre	\
+  RPM_SOURCE_DIR=\"%{u2p:%{_sourcedir}}\"\
+  RPM_BUILD_DIR=\"%{u2p:%{_builddir}}\"\
+  RPM_OPT_FLAGS=\"%{optflags}\"\
+  RPM_LD_FLAGS=\"%{?__global_ldflags}\"\
+  RPM_ARCH=\"%{_arch}\"\
+  RPM_OS=\"%{_os}\"\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_LD_FLAGS RPM_ARCH RPM_OS\
+  RPM_DOC_DIR=\"%{_docdir}\"\
+  export RPM_DOC_DIR\
+  RPM_PACKAGE_NAME=\"%{name}\"\
+  RPM_PACKAGE_VERSION=\"%{version}\"\
+  RPM_PACKAGE_RELEASE=\"%{release}\"\
+  export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+  LANG=C\
+  export LANG\
+  unset CDPATH DISPLAY ||:\
+  %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
+  export RPM_BUILD_ROOT}\
+  %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
+  export CLASSPATH}\
+  PKG_CONFIG_PATH=\"%{_PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
+  export PKG_CONFIG_PATH\
+  \
+  %{verbose:set -x}%{!verbose:exec > /dev/null}\
+  umask 022\
+  cd \"%{u2p:%{_builddir}}\"\
+  %{?pgo: gv2link.py < %{call_graph} > %{__global_link_order} } \
+
