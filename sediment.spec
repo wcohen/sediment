@@ -1,23 +1,24 @@
 Name:		sediment
 Version:	0.2
 Release:	1%{?dist}
-Summary:	A function reordering toolset
+Summary:	A function reordering tool set
 
 License:	GPLv3+
 URL:		http://people.redhat.com/wcohen/sediment
-Source0:	%{name}-%{version}.tar.gz
+Source0:	http://people.redhat.com/wcohen/sediment/%{name}-%{version}.tar.gz
 
 # sphinx is used for building documentation:
-BuildRequires:  python-sphinx
+BuildRequires: python-sphinx
 #Requires: gcc-python3-plugin
 Requires: graphviz-python
 BuildArch: noarch
 
 %description
-sediment is a set of programs that allow one reorder the functions in
-an executable based on statical and dynamic information about the program
-execution.
-
+The sediment tool set allows reordering the functions in compiled
+programs built with RPM to reduce the frequency of TLB misses and
+decrease the number of pages in the resident set.  Sediment generates
+call graphs from program execution and converts the callgraphs into
+link order information to improve code locality.
 
 %prep
 %setup -q
