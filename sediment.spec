@@ -17,7 +17,7 @@ BuildArch: noarch
 The sediment tool set allows reordering the functions in compiled
 programs built with RPM to reduce the frequency of TLB misses and
 decrease the number of pages in the resident set.  Sediment generates
-call graphs from program execution and converts the callgraphs into
+call graphs from program execution and converts the call graphs into
 link order information to improve code locality.
 
 %prep
