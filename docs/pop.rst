@@ -385,10 +385,10 @@ per clock IPC improves significantly, 4.8% and the number of cycles consumed
 during the run drops by 3.13%.
 
 			
-======================	===========     ======== 	=======
+=======================	============    =========== 	=======
 x86_64 physical machine postgresql	postgresql
 metric          	baseline	reordered	%change
-======================	===========     ======== 	=======
+=======================	============    =========== 	=======
 tps (including conn)	1,366.59	1,378.95	0.90%
 tps (excluding conn)	1,365.51	1,380.06	1.07%
 cycles			1.20E+012	1.16E+012	-3.13%
@@ -398,7 +398,7 @@ Itlb-load-misses	1.24E+009	9.95E+008	-19.79%
 i per iTLB-miss		568.97		720.40		26.61%
 Cpu-clock		997,897.58	974,661.58	-2.33%
 Task-clock		1,000,752.83	977,629.52	-2.31%
-======================	===========     ======== 	=======
+=======================	============    =========== 	=======
 
 The experiment in the x86_64 guest vm summarized in the table below show
 greater improvement that running on raw hardware.
