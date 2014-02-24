@@ -1,7 +1,9 @@
 # Makefile for Sphinx documentation
 #
 # FIXME this is probably not the right way to keep these files in the dist
-EXTRA_DIST = conf.py index.rst pop.rst
+EXTRA_DIST = conf.py index.rst pop.rst gv2link.py.rst perf2gv.py.rst
+
+man_MANS = _build/man/gv2link.py.1  _build/man/perf2gv.py.1 _build/man/sediment.1
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

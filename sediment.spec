@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 License:	GPLv3+
@@ -40,9 +40,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/write-dot-callgraph.py
 %doc %{_datadir}/doc/%{name}/html
 %doc README AUTHORS NEWS COPYING
+%{_mandir}/man1/*
 
 
 %changelog
+* Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.2-2
+- Add basic man pages for perf2gv.py and gv2link.py.
+
 * Wed Feb 19 2014 William Cohen <wcohen@redhat.com> 0.2-1
 - Bump version to 0.2.
 
