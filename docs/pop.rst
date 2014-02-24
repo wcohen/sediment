@@ -208,21 +208,21 @@ include a "--no-demangle" option.
 The examples directory in the sediment package contains examples of
 the various outputs.
 The
-:download:`postgres12.out <../examples/postgres12.out>` is the raw output from
+:download:`postgres12.out <examples/postgres12.out>` is the raw output from
 "perf report".
 The script perf2gv.py converted the raw perf output into
-:download:`postgres12.gv <../examples/postgres12.gv>`, a graphviz file.
+:download:`postgres12.gv <examples/postgres12.gv>`, a graphviz file.
 The
-:download:`postgres12.gv <../examples/postgres12.gv>` file can be converted
+:download:`postgres12.gv <examples/postgres12.gv>` file can be converted
 into a list of function in the desired link order with the gv2link.py
 script as shown in
-:download:`postgres12.link <../examples/postgres12.link>`
+:download:`postgres12.link <examples/postgres12.link>`
 The graphviz output file can also be converted into a viewable callgraph with::
 
   dot -Tsvg -o postgres12.svg postgres12.gv
 
 The result is
-:download:`postgres12.svg <../examples/postgres12.svg>` ,
+:download:`postgres12.svg <examples/postgres12.svg>` ,
 a scalable vector graphics file viewable in a many webbrowsers.
 Each elipse in the graph is a function.
 The functions are grouped together in a box representing the executable.
