@@ -1,8 +1,9 @@
 Name:		sediment
 Version:	0.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
+Group:		Development/Tools
 License:	GPLv3+
 URL:		http://people.redhat.com/wcohen/sediment
 Source0:	http://people.redhat.com/wcohen/sediment/%{name}-%{version}.tar.gz
@@ -14,7 +15,7 @@ Requires: graphviz-python
 BuildArch: noarch
 
 %description
-The sediment tool set allows reordering the functions in compiled
+The sediment tool set allows reordering of the functions in compiled
 programs built with RPM to reduce the frequency of TLB misses and
 decrease the number of pages in the resident set.  Sediment generates
 call graphs from program execution and converts the call graphs into
@@ -44,6 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.3-2
+- spec file fixes based on comments.
+
 * Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.3-1
 - Bump version.
 
