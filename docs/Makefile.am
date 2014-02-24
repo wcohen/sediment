@@ -1,7 +1,7 @@
 # Makefile for Sphinx documentation
 #
 # FIXME this is probably not the right way to keep these files in the dist
-EXTRA_DIST = conf.py index.rst pop.rst gv2link.py.rst perf2gv.py.rst
+EXTRA_DIST = conf.py index.rst pop.rst gv2link.py.rst perf2gv.py.rst examples
 
 MAN_INSTALL_DIR = $(DESTDIR)$(mandir)/man1
 
