@@ -22,7 +22,7 @@
    contain the root `toctree` directive.
 
 Sediment Function Reordering Tool
-=================
+=================================
 
 Contents:
 
