@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A function reordering tool set
 
 License:	GPLv3+
@@ -44,7 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.2-2
+* Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.2-3
 - Add basic man pages for perf2gv.py and gv2link.py.
 
 * Wed Feb 19 2014 William Cohen <wcohen@redhat.com> 0.2-1

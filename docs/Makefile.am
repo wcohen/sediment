@@ -3,7 +3,7 @@
 # FIXME this is probably not the right way to keep these files in the dist
 EXTRA_DIST = conf.py index.rst pop.rst gv2link.py.rst perf2gv.py.rst
 
-man_MANS = _build/man/gv2link.py.1  _build/man/perf2gv.py.1 _build/man/sediment.1
+MAN_INSTALL_DIR = $(DESTDIR)$(mandir)/man1
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -22,6 +22,8 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 install-data-hook:
 	$(MKDIR_P) $(DOC_INSTALL_DIR)/html
 	$(INSTALL_DATA) _build/html/*.* _build/html/_static/*  _build/html/_downloads/* $(DOC_INSTALL_DIR)/html
+	$(MKDIR_P)  $(MAN_INSTALL_DIR)
+	$(INSTALL_DATA) _build/man/* $(MAN_INSTALL_DIR)
 
 all: html man
 
