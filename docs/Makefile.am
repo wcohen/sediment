@@ -21,7 +21,11 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 install-data-hook:
 	$(MKDIR_P) $(DOC_INSTALL_DIR)/html
-	$(INSTALL_DATA) _build/html/*.* _build/html/_static/*  _build/html/_downloads/* $(DOC_INSTALL_DIR)/html
+	$(MKDIR_P) $(DOC_INSTALL_DIR)/html/_static
+	$(MKDIR_P) $(DOC_INSTALL_DIR)/html/_downloads
+	$(INSTALL_DATA) _build/html/*.*$(DOC_INSTALL_DIR)/html
+	$(INSTALL_DATA) _build/html/_static/* $(DOC_INSTALL_DIR)/html/_static
+	$(INSTALL_DATA) _build/html/_downloads/* $(DOC_INSTALL_DIR)/html/_downloads
 	$(MKDIR_P)  $(MAN_INSTALL_DIR)
 	$(INSTALL_DATA) _build/man/* $(MAN_INSTALL_DIR)
 
