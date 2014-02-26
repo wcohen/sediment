@@ -1,5 +1,5 @@
 Name:		sediment
-Version:	0.4
+Version:	0.5
 Release:	1%{?dist}
 Summary:	A function reordering tool set
 
@@ -45,6 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.5-1
+- Bump version.
+
 * Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.4-1
 - Bump version.
 
