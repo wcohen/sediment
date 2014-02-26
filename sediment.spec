@@ -41,7 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/write-dot-callgraph.py
 %doc %{_datadir}/doc/%{name}/html
 %doc README AUTHORS NEWS COPYING
-%{_mandir}/man1/*
+%doc %{_mandir}/man1/*
 
 
 %changelog
