@@ -6,7 +6,8 @@ DEBUG= -g
 OPTIMIZE=
 CCFLAGS=-Wall $(DEBUG) $(OPTIMIZE)
 
-dist_bin_SCRIPTS = perf2gv gv2link write-dot-callgraph.py
+pkglibexec_SCRIPTS = write-dot-callgraph.py
+dist_bin_SCRIPTS = perf2gv gv2link
 EXTRA_DIST = sediment.spec
 
 

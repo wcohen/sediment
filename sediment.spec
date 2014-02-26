@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -38,13 +38,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/gv2link
 %{_bindir}/perf2gv
-%{_bindir}/write-dot-callgraph.py
+%{_libexecdir}/%{name}
 %doc %{_datadir}/doc/%{name}/html
 %doc README AUTHORS NEWS COPYING
 %doc %{_mandir}/man1/*
 
 
 %changelog
+* Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.3-3
+- Move write-dot-callgraph.py out of /usr/bin.
+
 * Mon Feb 24 2014 William Cohen <wcohen@redhat.com> 0.3-2
 - spec file fixes based on comments.
 

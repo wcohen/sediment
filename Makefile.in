@@ -120,8 +120,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(bindir)"
-SCRIPTS = $(dist_bin_SCRIPTS)
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)"
+SCRIPTS = $(dist_bin_SCRIPTS) $(pkglibexec_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -312,7 +312,8 @@ top_srcdir = @top_srcdir@
 DEBUG = -g
 OPTIMIZE = 
 CCFLAGS = -Wall $(DEBUG) $(OPTIMIZE)
-dist_bin_SCRIPTS = perf2gv gv2link write-dot-callgraph.py
+pkglibexec_SCRIPTS = write-dot-callgraph.py
+dist_bin_SCRIPTS = perf2gv gv2link
 EXTRA_DIST = sediment.spec
 SUBDIRS = docs
 DIST_SUBDIRS = $(SUBDIRS)
@@ -388,6 +389,41 @@ uninstall-dist_binSCRIPTS:
 	files=`for p in $$list; do echo "$$p"; done | \
 	       sed -e 's,.*/,,;$(transform)'`; \
 	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+install-pkglibexecSCRIPTS: $(pkglibexec_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(pkglibexec_SCRIPTS)'; test -n "$(pkglibexecdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkglibexecdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(pkglibexecdir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(pkglibexecdir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-pkglibexecSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkglibexec_SCRIPTS)'; test -n "$(pkglibexecdir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(pkglibexecdir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -681,7 +717,7 @@ check: check-recursive
 all-am: Makefile $(SCRIPTS)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -741,7 +777,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-dist_binSCRIPTS
+install-exec-am: install-dist_binSCRIPTS install-pkglibexecSCRIPTS
 
 install-html: install-html-recursive
 
@@ -781,7 +817,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-dist_binSCRIPTS
+uninstall-am: uninstall-dist_binSCRIPTS uninstall-pkglibexecSCRIPTS
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -795,11 +831,12 @@ uninstall-am: uninstall-dist_binSCRIPTS
 	install-data-am install-dist_binSCRIPTS install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-am uninstall-dist_binSCRIPTS
+	install-pdf install-pdf-am install-pkglibexecSCRIPTS \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-dist_binSCRIPTS uninstall-pkglibexecSCRIPTS
 
 
 clean-local:

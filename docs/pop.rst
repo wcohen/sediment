@@ -173,7 +173,7 @@ generation of .gv files for each compile unit.
 With the python gcc plugin installed on the machine the .rpmmacros can
 be setup to run the plugin for each compilation with something like::
 
-  %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} -ffunction-sections -fplugin=python3 -fplugin-arg-python3-script=/usr/bin/write-dot-callgraph.py``
+  %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} -ffunction-sections -fplugin=python3 -fplugin-arg-python3-script=/usr/libexec/sediment/write-dot-callgraph.py``
 
 The plugin generates files with .gv extenstion in the build
 directory. The .gv file can be passed through dot::
