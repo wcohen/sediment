@@ -1,6 +1,6 @@
 Name:		sediment
-Version:	0.3
-Release:	3%{?dist}
+Version:	0.4
+Release:	1%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -45,6 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.4-1
+- Bump version.
+
 * Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.3-3
 - Move write-dot-callgraph.py out of /usr/bin.
 
