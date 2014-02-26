@@ -232,8 +232,8 @@ latex_documents = [
 man_pages = [
     ('index', 'sediment', u'sediment Documentation',
      [u'William Cohen'], 1),
-    ('gv2link', 'gv2link', u'Convert Call Graph to Link Order',
+    ('gv2link.py', 'gv2link.py', u'Convert Call Graph to Link Order',
      [u'William Cohen'], 1),
-    ('perf2gvy', 'perf2gv', u'Convert perf data to Call Graph',
+    ('perf2gv.py', 'perf2gv.py', u'Convert perf data to Call Graph',
      [u'William Cohen'], 1),
 ]
