@@ -200,7 +200,7 @@ following command can collect the data on Fedora 17::
 
 The "perf report" command will generate a report that include the source and
 destinations of the calls. As a proof of concept, the Python
-script perf2gv.py is used to convert the output of "perf report" into
+script perf2gv is used to convert the output of "perf report" into
 a .gv file. The script does not handle demangled C++ code output.
 However, very recent versions of perf in the upstream stream kernels
 include a "--no-demangle" option. 
@@ -210,11 +210,11 @@ the various outputs.
 The
 :download:`postgres12.out <examples/postgres12.out>` is the raw output from
 "perf report".
-The script perf2gv.py converted the raw perf output into
+The script perf2gv converted the raw perf output into
 :download:`postgres12.gv <examples/postgres12.gv>`, a graphviz file.
 The
 :download:`postgres12.gv <examples/postgres12.gv>` file can be converted
-into a list of function in the desired link order with the gv2link.py
+into a list of function in the desired link order with the gv2link
 script as shown in
 :download:`postgres12.link <examples/postgres12.link>`
 The graphviz output file can also be converted into a viewable callgraph with::
@@ -289,7 +289,7 @@ The .rpmmacro file adds the following line to the %__build_pre macro
 to generate the link order when a call graph is available and pgo
 (Profile Guided Optimization) is set::
 
-  %{?call_graph:%{?pgo: gv2link.py < %{call_graph} > %{__global_link_order}  } } \
+  %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } } \
 
 All of the the macros above are contained in :download:`.rpmmacros
 <.rpmmacros>`.  The building with the function reordering is enabled
