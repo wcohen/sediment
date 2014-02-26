@@ -264,18 +264,15 @@ and CXXFLAGS.
 The actual linking will need specify the order of the functions
 in the exectuable based on the profiling information 
 rather than using the default.
-The default binutils allows one to specify a special link script, but
-with newer versions of gcc use collect2 to find needed constructors
-and ignores the linker script script option.
 Newer versions of binutils include the gold linker which has a option
 to specify the order of functions in the executable, "--section-ordering-file".
-For thise work one will need to set the default linker
-(ld) to the gold linker (ld.gold).
+For this to work one will need to set the linker
+(ld) to the gold linker (ld.gold) for gcc with the "-fuse-ld=gold" option.
 The RPM macros will be modified using a .rpmmacro file with::
 
-  %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?pgo:-ffunction-sections -fdata-sections}
+  %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections -fuse-ld=gold}}
   %__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
-  %__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}
+  %__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}}"}
 
 The .rpmmacro file includes a definition for %dist to note whether the
 rpm is a normal rpm or a Program Guided Optimization (PGO) rpm::
@@ -289,9 +286,10 @@ the link order and a define for pgo_file::
   %global call_graph %{SOURCE17}
 
 The .rpmmacro file adds the following line to the %__build_pre macro
-to generate the link order::
+to generate the link order when a call graph is available and pgo
+(Profile Guided Optimization) is set::
 
-    %{?pgo: gv2link.py < %{call_graph} > %{__global_link_order} }
+  %{?call_graph:%{?pgo: gv2link.py < %{call_graph} > %{__global_link_order}  } } \
 
 All of the the macros above are contained in :download:`.rpmmacros
 <.rpmmacros>`.  The building with the function reordering is enabled
@@ -299,9 +297,12 @@ with::
 
   rpmbuild -ba --define "pgo 1" <spec_file>
 
-In the future would prefer to hav the callgraph (.gv) file in the
-source RPM and then have the RPM macros use the following command
-would covert the call graph information into a link order::
+In the future would prefer to have more finer grain control rather
+than one call graph and link order for all the executables in the rpm.
+Maybe have something link the following to take the callgraph (.gv)
+file in the source RPM and then have the RPM macros use the following
+command would covert the call graph information into a link order for
+a specific executable::
 
   gen_link_order executable_name gen_profile_file
 

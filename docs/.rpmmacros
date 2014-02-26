@@ -1,6 +1,6 @@
-%__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?pgo:-ffunction-sections -fdata-sections}
+%__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections -fuse-ld=gold}}
 %__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
-%__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}
+%__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}}"}
 %dist .fc19%{?pgo:_pgo}
 
 %___build_pre	\
@@ -30,5 +30,5 @@
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
   cd \"%{u2p:%{_builddir}}\"\
-  %{?pgo: gv2link.py < %{call_graph} > %{__global_link_order} } \
+  %{?call_graph:%{?pgo: gv2link.py < %{call_graph} > %{__global_link_order}  } } \
 
