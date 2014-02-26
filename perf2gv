@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Copyright 2013  William Cohen <wcohen@redhat.com>
 # Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 #
 #   This is free software: you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by
@@ -21,6 +22,15 @@
 
 import fileinput
 import re
+import getopt
+import os
+import sys
+
+def usage(name):
+    print ('''usage: %s [<options>] < perf_output > call_graph_file
+  options:
+\t[-h|--help]''' \
+        % (name))
 
 def header():
     result = 'digraph Callgraph {\n'
@@ -77,6 +87,25 @@ def body(threshold, const):
         result += ('   %s ' % edge_name)
         result += ('[ label = %.3f ];\n' % counts[edge_name])
     return result
+
+argv0 = os.path.basename(sys.argv[0])
+
+# parse options
+try:
+    (opt, args) = getopt.getopt(sys.argv[1:],
+                              'h',
+                              ['help',
+                               ])
+except getopt.GetoptError, e:
+    print("%s: %s" % (argv0, e))
+    usage(argv0)
+    sys.exit(1)
+
+# process command line options
+for o in opt:
+    if o[0] in ('-h', '--help'):
+        usage(argv0)
+        sys.exit(0)
  
 print header()
 print body(0.000, 1.0)
