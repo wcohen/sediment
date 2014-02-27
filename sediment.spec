@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -30,21 +30,22 @@ link order information to improve code locality.
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 %make_install
 
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/gv2link
 %{_bindir}/perf2gv
 %{_libexecdir}/%{name}
 %doc %{_datadir}/doc/%{name}/html
 %doc README AUTHORS NEWS COPYING
-%doc %{_mandir}/man1/*
+%{_mandir}/man1/*
 
 
 %changelog
+* Thu Feb 27 2014 William Cohen <wcohen@redhat.com> 0.5-2
+- Update spec file based on Fedora package review rhbz 1070449.
+
 * Wed Feb 26 2014 William Cohen <wcohen@redhat.com> 0.5-1
 - Bump version.
 
