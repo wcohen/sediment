@@ -5,8 +5,8 @@ Summary:	A function reordering tool set
 
 Group:		Development/Tools
 License:	GPLv3+
-URL:		http://people.redhat.com/wcohen/sediment
-Source0:	http://people.redhat.com/wcohen/sediment/%{name}-%{version}.tar.gz
+URL:		https://fedorahosted.org/sediment/
+Source0:	https://fedorahosted.org/releases/s/e/sediment/sediment-%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires: python-sphinx
