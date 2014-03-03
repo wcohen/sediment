@@ -37,7 +37,7 @@ make %{?_smp_mflags}
 %{_bindir}/gv2link
 %{_bindir}/perf2gv
 %{_libexecdir}/%{name}
-%doc %{_docdir}/sediment
+%{_docdir}/sediment
 %doc README AUTHORS NEWS COPYING
 %{_mandir}/man1/*
 
