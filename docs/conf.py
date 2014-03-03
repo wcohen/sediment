@@ -197,7 +197,7 @@ htmlhelp_basename = 'sedimentdoc'
 latex_documents = [
   ('index', 'sediment.tex', u'sediment Documentation',
    u'William Cohen', 'manual'),
-  ('pop', 'pop.tex', u'sediment principals of operation',
+  ('pop', 'pop.tex', u'sediment principles of operation',
    u'William Cohen', 'manual'),
 ]
 
