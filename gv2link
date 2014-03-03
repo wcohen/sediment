@@ -127,7 +127,7 @@ def group_order(in_graph):
     func_order = []
     for i in super_node:
         func_order.extend(super_node[i])
-    
+
     return func_order
 
 
@@ -159,7 +159,7 @@ for o in opt:
     if o[0] in ('-h', '--help'):
         usage(argv0)
         sys.exit(0)
- 
+
 the_graph = read_graph()
 #gv.write(the_graph, "/tmp/output.log")
 link_order = gen_order(the_graph)
