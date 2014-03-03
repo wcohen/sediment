@@ -24,15 +24,20 @@
 Sediment Function Reordering Tool
 =================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
 
-This document describes the Sediment function tools.  In theory the
-this tools allow the functions to be ordered whiled building the
+This set of documents describe the Sediment function reordering tools.
+These tools allow the functions to be ordered while building the
 executable to reduce instruction TLB and page misses.
+Details about the implmentation and experimental results are in the
+:doc:`Sediment Principles of Operation manual </pop>`.
+
+Man pages
+=========
+* :doc:`perf2gv </perf2gv>`
+* :doc:`gv2link </gv2link>`
 
 Sediment is a work-in-progress; the things may well change.
 
