@@ -1,5 +1,5 @@
 Name:		sediment
-Version:	0.6
+Version:	0.7
 Release:	1%{?dist}
 Summary:	A function reordering tool set
 
@@ -43,6 +43,9 @@ make %{?_smp_mflags}
 
 
 %changelog
+* Mon Mar 03 2014 William Cohen <wcohen@redhat.com> 0.7-1
+- Rebase on sediment-0.7.
+
 * Fri Feb 28 2014 William Cohen <wcohen@redhat.com> 0.6-1
 - Update package and spec file based on Fedora package review rhbz 1070449.
 

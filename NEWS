@@ -1,3 +1,6 @@
+* What's new in version 0.7
+- Add the gen_profile_merge to merge multiple call graphs into a single file.
+
 * What's new in version 0.4
 
 - Remove the .py extensions from the perf2gv and gv2link commands
