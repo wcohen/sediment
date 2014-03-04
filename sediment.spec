@@ -36,6 +36,7 @@ make %{?_smp_mflags}
 %files
 %{_bindir}/gv2link
 %{_bindir}/perf2gv
+%{_bindir}/gen_profile_merge
 %{_libexecdir}/%{name}
 %{_docdir}/sediment
 %doc README AUTHORS NEWS COPYING
