@@ -1,0 +1,213 @@
+#!/usr/bin/python
+# Copyright 2014  William Cohen <wcohen@redhat.com>
+# Copyright 2014 Red Hat, Inc.
+#
+#   This is free software: you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see
+#   <http://www.gnu.org/licenses/>.
+
+# This simple script convert the perf report output for something that
+# has callgraph information into a graphviz output
+
+import gv
+import re
+import getopt
+import os
+import sys
+
+def debug_output(text):
+    if (debug_level):
+        sys.stderr.write(text)
+
+def extract_weight(label):
+    # some munging of input to allow use of gprof2dot data
+    label = re.sub(r'\d+\.\d*%\\n', "", label)
+    label = re.sub(r'[^\.\d]', "", label)
+    weight = float(label)
+    return weight
+
+
+def merge_nodes(g1, g2):
+    global cluster_count
+    cluster_count = 0
+    # Duplicate the subgraphs.  The subgraph names cluster[0-9]+ might
+    # not match up between graphs, so need to match the subgraphs by
+    # the label instead
+    g1_sub = {}
+
+    # Find all the subgraphs in g1.
+    sbg = gv.firstsubg(g1)
+    while gv.ok(sbg):
+        g1_sub_label = gv.getv(sbg, "label")
+        g1_sub[g1_sub_label] = sbg
+        sbg = gv.nextsubg(g1, sbg)
+
+    # Add subgraph in g2 but missing from g1 into g1.
+    sbg = gv.firstsubg(g2)
+    while gv.ok(sbg):
+        g2_sub_label = gv.getv(sbg, "label")
+        if (g2_sub_label not in g1_sub):
+            g1_sub_name = 'cluster%d' % cluster_count
+            cluster_count = cluster_count + 1
+            g1_sub_p = gv.graph(g1, g1_sub_name)
+            gv.setv (g1_sub_p, "label", g2_sub_label)
+            g1_sub[g2_sub_label] = g1_sub_p
+            debug_output( 'adding subgraph %s label=%s\n' %
+                          (g1_sub_name, g2_sub_label))
+        sbg = gv.nextsubg(g2, sbg)
+
+    # Add in the nodes from g2 into g1..
+    sbg = gv.firstsubg(g2)
+    while gv.ok(sbg):
+        g1_sub_p = g1_sub[gv.getv(sbg, "label")]
+        n2 = gv.firstnode(sbg)
+        while gv.ok(n2):
+            name2 = gv.nameof(n2)
+            if (gv.findnode(g1_sub_p, name2) == None):
+                gv.node(g1_sub_p, name2)
+            n2 = gv.nextnode(sbg, n2)
+        sbg = gv.nextsubg(g2, sbg)
+
+def merge_edge(g1, g2, e2, w):
+    # add edge from g2 to g2
+    label2 = gv.getv(e2, "label")
+    weight2 = w * extract_weight(label2)
+    head2 = gv.nameof(gv.headof(e2))
+    tail2 = gv.nameof(gv.tailof(e2))
+    head1 = gv.findnode(g1, head2)
+    tail1 = gv.findnode(g1, tail2)
+    e1 = gv.findedge(tail1, head1)
+
+    debug_output( 'g2 before %s -> %s %s\n' % (tail2, head2, label2) )
+
+    if (e1 == None):
+        # add in edge where non existed
+        e1 = gv.edge(tail1, head1)
+        weight1 = 0.0
+    else:
+        label1 = gv.getv(e1, "label")
+        weight1 = extract_weight(label1)
+
+    debug_output( 'g1 before %s -> %s %s\n'
+                  % (gv.nameof(tail1), gv.nameof(head1),
+                     gv.getv(gv.findedge(tail1, head1), "label") ) )
+
+    weight = weight1 + weight2
+    debug_output('[ label = %f ] = %f + %f\n' % (weight, weight1, weight2))
+    gv.setv(e1, "label", '%f' % weight)
+
+    debug_output( 'g1 after %s -> %s %s\n' %
+                  (gv.nameof(tail1), gv.nameof(head1),
+                   gv.getv(gv.findedge(tail1, head1), "label") ) )
+
+# merge nodes and edges weighted by w into g1
+def merge_graphs(g1, g2, w):
+    # add in nodes, make g1 a superset of g2
+    merge_nodes(g1, g2)
+
+    # add in edges
+    sbg = gv.firstsubg(g2)
+    while gv.ok(sbg):
+        e2 = gv.firstedge(sbg)
+        while gv.ok(e2):
+            merge_edge(g1, g2, e2, w)
+            e2 = gv.nextedge(sbg, e2)
+        sbg = gv.nextsubg(g2, sbg)
+
+
+    e2 = gv.firstedge(g2)
+    while gv.ok(e2):
+        # add edge to priority queue
+        merge_edge(g1, g2, e2, w)
+        e2 = gv.nextedge(g2, e2)
+
+    return g1
+
+def usage(name):
+    print ('''usage: %s [<options>] ...  options:
+\t[-h|--help]
+\t[-w|--weight]
+\t[-f|--file]
+\t[-o|--output]''' \
+        % (name))
+
+
+argv0 = os.path.basename(sys.argv[0])
+
+# parse options
+try:
+    (opt, args) = getopt.getopt(sys.argv[1:],
+                              'hw:f:o:d',
+                              ['help',
+			       'weight=',
+			       'file=',
+			       'output=',
+			       'debug',
+                               ])
+except getopt.GetoptError as e:
+    print("%s: %s" % (argv0, e))
+    usage(argv0)
+    sys.exit(1)
+
+#option variables
+global debug_level
+debug_level = 0
+global w
+w = 1
+files_to_merge = []
+files_weight = []
+
+# process command line options
+for o in opt:
+    debug_output("option :%s %s\n" % (o[0], o[1]))
+    if o[0] in ('-h', '--help'):
+        usage(argv0)
+        sys.exit(0)
+    elif o[0] in ('-w', '--weight'):
+        try:
+            w = float(o[1])
+        except ValueError:
+            sys.stderr.write("ERROR: %s is not a valid floating point number.\n"
+                             % (o[1]))
+            sys.exit(1)
+    elif o[0] in ('-f', '--file'):
+        files_to_merge.append(o[1])
+        files_weight.append(w)
+    elif o[0] in ('-o', '--output'):
+        output_file = o[1]
+    elif o[0] in ('-d', '--debug'):
+        debug_level = debug_level + 1
+
+merged_g = gv.digraph ("merged_callgraph")
+
+files_to_merge.reverse()
+files_weight.reverse()
+
+# Read in each of pair of weights and call graphs
+while len(files_to_merge):
+    # check that the file is valid
+    graph = files_to_merge.pop()
+    w = files_weight.pop()
+    debug_output('file: %s weight: %f\n' % (graph, w))
+    try:
+        os.stat(graph)
+        g = gv.read(graph)
+    except IOError:
+        sys.stderr.write("ERROR: Unable to read %s.\n" % graph)
+        sys.exit(1)
+    merged_g = merge_graphs(merged_g, g, w)
+
+# Write out the merged call graph
+if (gv.write(merged_g, output_file) == False):
+    sys.stderr.write("ERROR: Unable to write %s.\n" % output_file)
+    sys.exit(1)

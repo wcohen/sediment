@@ -38,6 +38,7 @@ Man pages
 =========
 * :doc:`perf2gv </perf2gv>`
 * :doc:`gv2link </gv2link>`
+* :doc:`gen_profile_merge </gen_profile_merge>`
 
 Sediment is a work-in-progress; the things may well change.
 

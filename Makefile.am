@@ -7,7 +7,7 @@ OPTIMIZE=
 CCFLAGS=-Wall $(DEBUG) $(OPTIMIZE)
 
 pkglibexec_SCRIPTS = write-dot-callgraph.py
-dist_bin_SCRIPTS = perf2gv gv2link
+dist_bin_SCRIPTS = perf2gv gv2link gen_profile_merge
 EXTRA_DIST = sediment.spec write-dot-callgraph.py
 
 

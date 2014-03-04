@@ -244,7 +244,7 @@ with perf samples/backtraces. The file format will basically list the
 relative freqency of calls between various functions. The files are
 only required to list functions that have samples::
 
-  gen_profiles_merge  merged_file_name weight1 file1 weight2 file2 ... ...
+  gen_profiles_merge  -o merged_file_name -w weight1 -f file1 -w weight2 -f file2 ... ...
 
 The gen_profile_merge script combines the multiple files received
 into a single merged file. The floating point numerical weights allow

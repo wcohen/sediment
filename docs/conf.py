@@ -236,4 +236,6 @@ man_pages = [
      [u'William Cohen'], 1),
     ('perf2gv', 'perf2gv', u'Convert perf data to Call Graph',
      [u'William Cohen'], 1),
+    ('gen_profile_merge', 'gen_profile_merge', u'Merge multiple callgraphs into one  Call Graph',
+     [u'William Cohen'], 1),
 ]
