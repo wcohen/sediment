@@ -1,5 +1,5 @@
 Name:		sediment
-Version:	0.7
+Version:	0.8
 Release:	1%{?dist}
 Summary:	A function reordering tool set
 
@@ -44,6 +44,9 @@ make %{?_smp_mflags}
 
 
 %changelog
+* Wed Mar 05 2014 William Cohen <wcohen@redhat.com> 0.8-1
+- Rebase on sediment-0.7.
+
 * Mon Mar 03 2014 William Cohen <wcohen@redhat.com> 0.7-1
 - Rebase on sediment-0.7.
 
