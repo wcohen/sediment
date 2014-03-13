@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -38,12 +38,17 @@ make %{?_smp_mflags}
 %{_bindir}/perf2gv
 %{_bindir}/gen_profile_merge
 %{_libexecdir}/%{name}
+%if 0%{?fedora} < 20
 %{_docdir}/sediment
+%endif
 %doc README AUTHORS NEWS COPYING
 %{_mandir}/man1/*
 
 
 %changelog
+* Wed Mar 05 2014 William Cohen <wcohen@redhat.com> 0.8-2
+- Avoid listing doc files twice in newer Fedora distributions.
+
 * Wed Mar 05 2014 William Cohen <wcohen@redhat.com> 0.8-1
 - Rebase on sediment-0.7.
 
