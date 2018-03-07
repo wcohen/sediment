@@ -1,9 +1,7 @@
-AC_INIT([sediment], [0.8], [wcohen@redhat.com])
+AC_INIT([sediment], [0.9], [wcohen@redhat.com])
 
 
 AM_INIT_AUTOMAKE
-AC_PROG_CC
-AC_PROG_CXX
 
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(docs/Makefile)
