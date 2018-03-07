@@ -1,12 +1,12 @@
 Name:		sediment
-Version:	0.8
-Release:	2%{?dist}
+Version:	0.9
+Release:	1%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
 License:	GPLv3+
-URL:		https://fedorahosted.org/sediment/
-Source0:	https://fedorahosted.org/releases/s/e/sediment/sediment-%{version}.tar.gz
+URL:		https://github.com/wcohen/sediment
+Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires: python-sphinx
@@ -46,6 +46,9 @@ make %{?_smp_mflags}
 
 
 %changelog
+* Wed Mar 07 2018 William Cohen <wcohen@redhat.com> - 0.9-1
+- Rebuild on sediment 0.9.
+
 * Wed Mar 05 2014 William Cohen <wcohen@redhat.com> 0.8-2
 - Avoid listing doc files twice in newer Fedora distributions.
 
