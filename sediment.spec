@@ -1,15 +1,18 @@
 Name:		sediment
 Version:	0.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
 License:	GPLv3+
 URL:		https://github.com/wcohen/sediment
-Source0:	https://github.com/wcohen/sediment/archive/%{version}.tar.gz
+# rpmbuild doesn't like it, but actual GitHub URL is:
+# https://github.com/wcohen/sediment/archive/%%{version}.tar.gz
+Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
 
 # sphinx is used for building documentation:
-BuildRequires: python-sphinx
+BuildRequires: python2-sphinx
+BuildRequires: automake
 #Requires: gcc-python3-plugin
 Requires: graphviz-python
 BuildArch: noarch
@@ -27,7 +30,8 @@ link order information to improve code locality.
 
 %build
 %configure
-make %{?_smp_mflags}
+# doc makefile using sphinx does not work with parallel build
+make
 
 %install
 %make_install
@@ -38,14 +42,15 @@ make %{?_smp_mflags}
 %{_bindir}/perf2gv
 %{_bindir}/gen_profile_merge
 %{_libexecdir}/%{name}
-%if 0%{?fedora} < 20
-%{_docdir}/sediment
-%endif
+%{_docdir}/sediment/html
 %doc README AUTHORS NEWS COPYING
 %{_mandir}/man1/*
 
 
 %changelog
+* Wed Mar 07 2018 William Cohen <wcohen@redhat.com> - 0.9-2
+- Add automake build requires.
+
 * Wed Mar 07 2018 William Cohen <wcohen@redhat.com> - 0.9-1
 - Rebuild on sediment 0.9.
 
