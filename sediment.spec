@@ -6,7 +6,7 @@ Summary:	A function reordering tool set
 Group:		Development/Tools
 License:	GPLv3+
 URL:		https://github.com/wcohen/sediment
-Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
+Source0:	https://github.com/wcohen/sediment/archive/%{version}.tar.gz
 
 # sphinx is used for building documentation:
 BuildRequires: python-sphinx
