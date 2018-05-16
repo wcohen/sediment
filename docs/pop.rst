@@ -469,4 +469,4 @@ References
 .. [Glek10] Taras Glek, Linux: How to Make Startup Suck Less (Also Reduce Memory Usage!) http://blog.mozilla.org/tglek/2010/04/05/linux-how-to-make-startup-suck-less-and-reduce-memory-usage/ 
 .. [Gor10] Mel Gorman, Huge pages part 5: A deeper look at TLBs and costs March 23, 2010 http://lwn.net/Articles/379748/ 
 .. [Ho95] W. Wilson Ho, et. al. Optimizing the Performance of Dynamically-Linked Programs http://www.usenix.org/publications/library/proceedings/neworl/ho.html 
-.. [Mal12] David Malcolm, GCC Python Plugin https://fedorahosted.org/gcc-python-plugin/ 
+.. [Mal12] David Malcolm, GCC Python Plugin https://github.com/davidmalcolm/gcc-python-plugin/
