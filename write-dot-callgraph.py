@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #   Copyright 2011 David Malcolm <dmalcolm@redhat.com>
 #   Copyright 2011 Red Hat, Inc.
 #

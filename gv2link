@@ -1,7 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright 2013  William Cohen <wcohen@redhat.com>
 # Copyright 2013 Red Hat, Inc.
 # Copyright 2014 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 #
 #   This is free software: you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by
@@ -29,10 +30,10 @@ import getopt
 import os
 
 def usage(name):
-    print ('''usage: %s [<options>] < call_graph_file > link_order_file
+    print(('''usage: %s [<options>] < call_graph_file > link_order_file
   options:
 \t[-h|--help]''' \
-        % (name))
+        % (name)))
 
 def read_graph():
     text =  ''
@@ -137,7 +138,7 @@ def gen_order(in_graph):
 
 def print_order(order):
     for n in order:
-        print ('.text.%s' % n)
+        print(('.text.%s' % n))
     #everything else
     print ('.text.*')
 
@@ -149,8 +150,8 @@ try:
                               'h',
                               ['help',
                                ])
-except getopt.GetoptError, e:
-    print("%s: %s" % (argv0, e))
+except getopt.GetoptError as e:
+    print(("%s: %s" % (argv0, e)))
     usage(argv0)
     sys.exit(1)
 

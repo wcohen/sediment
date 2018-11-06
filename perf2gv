@@ -1,7 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright 2013  William Cohen <wcohen@redhat.com>
 # Copyright 2013 Red Hat, Inc.
 # Copyright 2014 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 #
 #   This is free software: you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by
@@ -27,10 +28,10 @@ import os
 import sys
 
 def usage(name):
-    print ('''usage: %s [<options>] < perf_output > call_graph_file
+    print(('''usage: %s [<options>] < perf_output > call_graph_file
   options:
 \t[-h|--help]''' \
-        % (name))
+        % (name)))
 
 def header():
     result = 'digraph Callgraph {\n'
@@ -65,11 +66,11 @@ def body(threshold, const):
             callee = extract_func(element[7])
             counts[('  "%s" -> "%s" ' % (caller, callee))] = weight
             # add function to subgraph
-            if subgraphs.has_key(caller_bin) :
+            if caller_bin in subgraphs :
                 subgraphs[caller_bin].add(caller)
             else:
                 subgraphs[caller_bin] = set([ caller ])
-            if subgraphs.has_key(callee_bin) :
+            if callee_bin in subgraphs :
                 subgraphs[callee_bin].add(callee)
             else:
                 subgraphs[callee_bin] = set([ callee ])
@@ -96,8 +97,8 @@ try:
                               'h',
                               ['help',
                                ])
-except getopt.GetoptError, e:
-    print("%s: %s" % (argv0, e))
+except getopt.GetoptError as e:
+    print(("%s: %s" % (argv0, e)))
     usage(argv0)
     sys.exit(1)
 
@@ -107,6 +108,6 @@ for o in opt:
         usage(argv0)
         sys.exit(0)
 
-print header()
-print body(0.000, 1.0)
-print footer()
+print(header())
+print(body(0.000, 1.0))
+print(footer())

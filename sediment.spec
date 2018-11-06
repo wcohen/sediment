@@ -1,6 +1,6 @@
 Name:		sediment
-Version:	0.9
-Release:	2%{?dist}
+Version:	0.9.1
+Release:	1%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -13,8 +13,9 @@ Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
 # sphinx is used for building documentation:
 BuildRequires: python2-sphinx
 BuildRequires: automake
+BuildRequires: autoconf
 #Requires: gcc-python3-plugin
-Requires: graphviz-python
+Requires: python2.7dist(gv)
 BuildArch: noarch
 
 %description
@@ -29,6 +30,7 @@ link order information to improve code locality.
 
 
 %build
+autoreconf -iv
 %configure
 # doc makefile using sphinx does not work with parallel build
 make
@@ -48,6 +50,12 @@ make
 
 
 %changelog
+* Mon Nov 05 2018 William Cohen <wcohen@redhat.com> - 0.9.1-1
+- Use python3.
+
+* Fri May 18 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 0.9-3
+- Update graphviz dependency
+
 * Wed Mar 07 2018 William Cohen <wcohen@redhat.com> - 0.9-2
 - Add automake build requires.
 
