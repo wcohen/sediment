@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.9.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 Group:		Development/Tools
@@ -11,7 +11,7 @@ URL:		https://github.com/wcohen/sediment
 Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
 
 # sphinx is used for building documentation:
-BuildRequires: python2-sphinx
+BuildRequires: python3-sphinx
 BuildRequires: automake
 BuildRequires: autoconf
 #Requires: gcc-python3-plugin
@@ -50,6 +50,9 @@ make
 
 
 %changelog
+* Mon Nov 05 2018 William Cohen <wcohen@redhat.com> - 0.9.1-2
+- Use python3-sphinx to build documentation.
+
 * Mon Nov 05 2018 William Cohen <wcohen@redhat.com> - 0.9.1-1
 - Use python3.
 
