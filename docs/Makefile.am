@@ -26,7 +26,16 @@ install-data-hook:
 	$(MKDIR_P) $(DOC_INSTALL_DIR)/html/_static
 	$(INSTALL_DATA) _build/html/_static/* $(DOC_INSTALL_DIR)/html/_static
 	$(MKDIR_P) $(DOC_INSTALL_DIR)/html/_downloads
-	$(INSTALL_DATA) _build/html/_downloads/* $(DOC_INSTALL_DIR)/html/_downloads
+	for dir in $(shell find _build/html/_downloads/* -type d) ; do \
+	   d=$${dir#"_build/html/"} ; \
+	   echo "$(MKDIR_P) $(DOC_INSTALL_DIR)/html/$$d" ; \
+	   $(MKDIR_P) $(DOC_INSTALL_DIR)/html/$$d ; \
+	done
+	for file_name in $(shell find _build/html/_downloads/* -type f) ; do \
+	   f=$${file_name#"_build/html/"} ; \
+	   echo "$(INSTALL_DATA) $$file_name $(DOC_INSTALL_DIR)/html/$$f" ; \
+	   $(INSTALL_DATA) $$file_name $(DOC_INSTALL_DIR)/html/$$f ; \
+	done ; \
 	$(MKDIR_P)  $(MAN_INSTALL_DIR)
 	$(INSTALL_DATA) _build/man/* $(MAN_INSTALL_DIR)
 
