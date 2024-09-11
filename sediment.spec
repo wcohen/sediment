@@ -1,21 +1,19 @@
 Name:		sediment
 Version:	0.9.1
-Release:	2%{?dist}
+Release:	17%{?dist}
 Summary:	A function reordering tool set
 
-Group:		Development/Tools
-License:	GPLv3+
+License:	GPL-3.0-or-later
 URL:		https://github.com/wcohen/sediment
-# rpmbuild doesn't like it, but actual GitHub URL is:
-# https://github.com/wcohen/sediment/archive/%%{version}.tar.gz
-Source0:	https://github.com/wcohen/sediment/archive/sediment-%{version}.tar.gz
+Source0:	https://github.com/wcohen/sediment/archive/%{version}/%{name}-%{version}.tar.gz
 
 # sphinx is used for building documentation:
-BuildRequires: python3-sphinx
+BuildRequires: make
+BuildRequires: python3-sphinx >= 2.0
 BuildRequires: automake
 BuildRequires: autoconf
 #Requires: gcc-python3-plugin
-Requires: python2.7dist(gv)
+Requires: python3dist(gv)
 BuildArch: noarch
 
 %description
@@ -26,7 +24,7 @@ call graphs from program execution and converts the call graphs into
 link order information to improve code locality.
 
 %prep
-%setup -q
+%autosetup -n sediment-%{version}
 
 
 %build
@@ -50,6 +48,9 @@ make
 
 
 %changelog
+* Tue Sep 10 2024 William Cohen <wcohen@redhat.com> - 0.9.1-17
+- Incorporate Fedora sediment.spec fixes and general cleanup of sediment.spec.
+
 * Mon Nov 05 2018 William Cohen <wcohen@redhat.com> - 0.9.1-2
 - Use python3-sphinx to build documentation.
 
