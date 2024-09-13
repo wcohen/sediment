@@ -69,6 +69,8 @@ def extract_weight(label):
 def group_order(in_graph):
     # put edges in priority queue
     heap = []
+    # counter ensures edges in heap tuples are not compared
+    counter = 0
     sbg = gv.firstsubg(in_graph)
     while gv.ok(sbg):
         e = gv.firstedge(sbg)
@@ -76,7 +78,8 @@ def group_order(in_graph):
             # add edge to priority queue
             label = gv.getv(e, "label")
             weight = - extract_weight(label)
-            heapq.heappush(heap, (weight, e))
+            heapq.heappush(heap, (weight, counter, e))
+            counter = counter + 1
             e = gv.nextedge(sbg, e)
         sbg = gv.nextsubg(in_graph, sbg)
 
@@ -86,7 +89,8 @@ def group_order(in_graph):
         # add edge to priority queue
         label = gv.getv(e, "label")
         weight = - extract_weight(label)
-        heapq.heappush(heap, (weight, e))
+        heapq.heappush(heap, (weight, counter, e))
+        counter = counter + 1
         e = gv.nextedge(in_graph, e)
 
     # pull out edges and group functions together until all edges processed
@@ -96,8 +100,8 @@ def group_order(in_graph):
     func_member = {}
     while heap:
         group = heapq.heappop(heap)
-        head = gv.nameof(gv.headof(group[1]))
-        tail = gv.nameof(gv.tailof(group[1]))
+        head = gv.nameof(gv.headof(group[2]))
+        tail = gv.nameof(gv.tailof(group[2]))
         # print ( '%s -> %s %3f' % (tail, head, group[0]))
         if not(head in func_member) and not(tail in func_member):
             # print "new supernode"
