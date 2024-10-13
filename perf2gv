@@ -86,7 +86,7 @@ def body(threshold, const):
     # Print the accumulated edges
     for edge_name in counts:
         result += ('   %s ' % edge_name)
-        result += ('[ label = %.3f ];\n' % counts[edge_name])
+        result += ('[ label = %.6f ];\n' % counts[edge_name])
     return result
 
 argv0 = os.path.basename(sys.argv[0])
