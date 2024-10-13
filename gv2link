@@ -141,10 +141,12 @@ def gen_order(in_graph):
     return group_order(in_graph)
 
 def print_order(order):
+    print(('.text : {'))
     for n in order:
-        print(('.text.%s' % n))
+        print(('  *(.text.%s)' % n))
     #everything else
-    print ('.text.*')
+    print ('  *(.text.*)')
+    print(('}'))
 
 argv0 = os.path.basename(sys.argv[0])
 
