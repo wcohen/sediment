@@ -264,32 +264,33 @@ and CXXFLAGS.
 The actual linking will need specify the order of the functions
 in the exectuable based on the profiling information 
 rather than using the default.
-Newer versions of binutils include the gold linker which has a option
+Newer versions of binutils (2.43) include a ld linker with an option
 to specify the order of functions in the executable, "--section-ordering-file".
-For this to work one will need to set the linker
-(ld) to the gold linker (ld.gold) for gcc with the "-fuse-ld=gold" option.
 The RPM macros will be modified using a .rpmmacro file with::
 
-  %__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections -fuse-ld=gold}}
+  %build_cflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
+  %build_cxxflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
+  %build_fflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/lib64/gfortran/modules  %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
   %__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
-  %__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}}"}
+  %build_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}}
 
 The .rpmmacro file includes a definition for %dist to note whether the
-rpm is a normal rpm or a Program Guided Optimization (PGO) rpm::
+rpm is a normal rpm or a Program Guided Optimization (PGO) rpm to make it easier
+to have both a PGO and non-PGO version of the RPMs for performance evaluation::
 
-  %dist .fc19%{?pgo:_pgo}
+  %dist .fc42%{?pgo:_pgo}
 
 Currently, the source RPMs files include a call graph file used to compute
 the link order and a define for pgo_file::
 
-  Source17: postgresql.gv
-  %global call_graph %{SOURCE17}
+  SOURCE18: postgresql.gv
+  %global call_graph %{SOURCE18}
 
 The .rpmmacro file adds the following line to the %__build_pre macro
 to generate the link order when a call graph is available and pgo
 (Profile Guided Optimization) is set::
 
-  %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } } \
+  %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } }
 
 All of the the macros above are contained in :download:`.rpmmacros
 <.rpmmacros>`.  The building with the function reordering is enabled

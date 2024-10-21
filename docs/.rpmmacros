@@ -1,34 +1,37 @@
-%__global_cflags	-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 %{_hardened_cflags} %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections -fuse-ld=gold}}
+%build_cflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
+%build_cxxflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
+%build_fflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/lib64/gfortran/modules  %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
 %__global_link_order \"%{u2p:%{_builddir}}/%{name}-%{version}-%{release}.order\"
-%__global_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}}"}
-%dist .fc19%{?pgo:_pgo}
+%build_ldflags	-Wl,-z,relro %{_hardened_ldflags} %{?call_graph:%{?pgo:-Wl,"--section-ordering-file,%{__global_link_order}"}}
+%dist .fc42%{?pgo:_pgo}
 
-%___build_pre	\
-  RPM_SOURCE_DIR=\"%{u2p:%{_sourcedir}}\"\
-  RPM_BUILD_DIR=\"%{u2p:%{_builddir}}\"\
+%___build_pre_env \
+  RPM_SOURCE_DIR=\"%{_sourcedir}\"\
+  RPM_BUILD_DIR=\"%{builddir}\"\
   RPM_OPT_FLAGS=\"%{optflags}\"\
-  RPM_LD_FLAGS=\"%{?__global_ldflags}\"\
+  RPM_LD_FLAGS=\"%{?build_ldflags}\"\
   RPM_ARCH=\"%{_arch}\"\
   RPM_OS=\"%{_os}\"\
-  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_LD_FLAGS RPM_ARCH RPM_OS\
+  RPM_BUILD_NCPUS=\"%{_smp_build_ncpus}\"\
+  RPM_SPECPARTS_DIR=\"%{specpartsdir}\"\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS RPM_SPECPARTS_DIR RPM_LD_FLAGS\
   RPM_DOC_DIR=\"%{_docdir}\"\
   export RPM_DOC_DIR\
-  RPM_PACKAGE_NAME=\"%{name}\"\
-  RPM_PACKAGE_VERSION=\"%{version}\"\
-  RPM_PACKAGE_RELEASE=\"%{release}\"\
+  RPM_PACKAGE_NAME=\"%{NAME}\"\
+  RPM_PACKAGE_VERSION=\"%{VERSION}\"\
+  RPM_PACKAGE_RELEASE=\"%{RELEASE}\"\
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
-  LANG=C\
+  LANG=C.UTF-8\
   export LANG\
   unset CDPATH DISPLAY ||:\
-  %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
-  export RPM_BUILD_ROOT}\
+  unset DEBUGINFOD_URLS ||:\
+  unset RPM_CONFIG_DIR ||:\
+  RPM_BUILD_ROOT=\"%{buildroot}\"\
+  export RPM_BUILD_ROOT\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
-  PKG_CONFIG_PATH=\"%{_PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
+  PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
   export PKG_CONFIG_PATH\
-  \
-  %{verbose:set -x}%{!verbose:exec > /dev/null}\
-  umask 022\
-  cd \"%{u2p:%{_builddir}}\"\
-  %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } } \
-
+  CONFIG_SITE=${CONFIG_SITE:-NONE}\
+  export CONFIG_SITE \
+  %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } }
