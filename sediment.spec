@@ -1,6 +1,6 @@
 Name:		sediment
-Version:	0.9.1
-Release:	17%{?dist}
+Version:	0.9.2
+Release:	1%{?dist}
 Summary:	A function reordering tool set
 
 License:	GPL-3.0-or-later
@@ -48,6 +48,9 @@ make
 
 
 %changelog
+* Mon Oct 21 2024 William Cohen <wcohen@redhat.com> - 0.9.2-1
+- Update to use binutil 2.43 ld for linking.
+
 * Tue Sep 10 2024 William Cohen <wcohen@redhat.com> - 0.9.1-17
 - Incorporate Fedora sediment.spec fixes and general cleanup of sediment.spec.
 
