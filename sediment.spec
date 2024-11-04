@@ -1,6 +1,6 @@
 Name:		sediment
 Version:	0.9.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A function reordering tool set
 
 License:	GPL-3.0-or-later
@@ -41,6 +41,7 @@ make
 %{_bindir}/gv2link
 %{_bindir}/perf2gv
 %{_bindir}/gen_profile_merge
+%{_bindir}/make_sediment_rpmmacros
 %{_libexecdir}/%{name}
 %{_docdir}/sediment/html
 %doc README AUTHORS NEWS COPYING
@@ -48,6 +49,9 @@ make
 
 
 %changelog
+* Mon Nov 4 2024 William Cohen <wcohen@redhat.com> - 0.9.2-2
+- Add make_sediment_rpmmacros and update Makefile.* and configure to include it.
+
 * Mon Oct 21 2024 William Cohen <wcohen@redhat.com> - 0.9.2-1
 - Update to use binutil 2.43 ld for linking.
 
