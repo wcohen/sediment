@@ -194,35 +194,34 @@ Recent Linux kernels provide access to the Intel processors' Last
 Branch Record (LBR). This mechanism records samples listing the source
 and destination of each call (and other jump operations) executed in
 application code. perf can read this data out. Something like the
-following command can collect the data on Fedora 17::
+following command can collect the data on Fedora 41::
 
   perf record -e branches:u -j any_call executable_under_test
 
-The "perf report" command will generate a report that include the source and
-destinations of the calls. As a proof of concept, the Python
-script perf2gv is used to convert the output of "perf report" into
-a .gv file. The script does not handle demangled C++ code output.
-However, very recent versions of perf in the upstream stream kernels
-include a "--no-demangle" option. 
+The "perf report" command will generate a report that include the
+source and destinations of the calls. As a proof of concept, the
+Python script perf2gv is used to convert the output of "perf report"
+into a .gv file. The script does not handle demangled C++ code output
+and one should use the perf "--no-demangle" option..
 
 The examples directory in the sediment package contains examples of
 the various outputs.
 The
-:download:`postgres12.out <examples/postgres12.out>` is the raw output from
-"perf report".
+:download:`postgresql16.out <examples/postgresql16.out>` is the raw output from
+"perf report --no-demangle --sort=comm,dso_from,symbol_from,dso_to,symbol_to".
 The script perf2gv converted the raw perf output into
-:download:`postgres12.gv <examples/postgres12.gv>`, a graphviz file.
+:download:`postgresql16.gv <examples/postgresql16.gv>`, a graphviz file.
 The
-:download:`postgres12.gv <examples/postgres12.gv>` file can be converted
+:download:`postgresql16.gv <examples/postgresql16.gv>` file can be converted
 into a list of function in the desired link order with the gv2link
 script as shown in
-:download:`postgres12.link <examples/postgres12.link>`
+:download:`postgresql16.link <examples/postgresql16.link>`
 The graphviz output file can also be converted into a viewable callgraph with::
 
-  dot -Tsvg -o postgres12.svg postgres12.gv
+  dot -Tsvg -o postgresql16.svg postgresql16.gv
 
 The result is
-:download:`postgres12.svg <examples/postgres12.svg>` ,
+:download:`postgresql16.svg <examples/postgresql16.svg>` ,
 a scalable vector graphics file viewable in a many webbrowsers.
 Each elipse in the graph is a function.
 The functions are grouped together in a box representing the executable.
@@ -266,6 +265,7 @@ in the exectuable based on the profiling information
 rather than using the default.
 Newer versions of binutils (2.43) include a ld linker with an option
 to specify the order of functions in the executable, "--section-ordering-file".
+There is a "make_sediment_rpmmacros" command in sediment to produce appropriate macros that to store in the local .rpmmacros file.
 The RPM macros will be modified using a .rpmmacro file with::
 
   %build_cflags -O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer %{?call_graph:%{?pgo:-ffunction-sections -fdata-sections}}
@@ -292,9 +292,11 @@ to generate the link order when a call graph is available and pgo
 
   %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } }
 
-All of the the macros above are contained in :download:`.rpmmacros
-<.rpmmacros>`.  The building with the function reordering is enabled
-with::
+An example for x86_64 the macros above are contained in :download:`.rpmmacros
+<.rpmmacros>`.  Howeve, it is probably better to generate the appropriate RPM macros
+with the "make_sediment_rpmmacros" output as these are going to vary by architecture
+and Linux distribution.
+The building with the function reordering is enabled with::
 
   rpmbuild -ba --define "pgo 1" <spec_file>
 
@@ -346,9 +348,26 @@ Drawbacks of Function Reordering Approach:
 Exploratory Work
 ================
 
-The relative benefit of this optimization is going to depend greatly
-on the hardware, software, and workloads used. As a quick measure the
-postgres server was monitored with::
+The benefits of this optimization depends greatly on the hardware,
+software, and workloads used. The postgresql database excercised with
+pgbench was used as a testcase to gauge the performance improvements
+on several Fedora 41 environments.  The postgresql package was
+selected as the /usr/bin/postgres executable is 9.4MB stripped on
+x86_64 Fedora 41 and would potentially benefit from reordering code to
+group commonly used functions on the same or adjacent pages of memory.
+Overall, between 3.3% and 6.1% improvement in IPC was observed. The
+number of instructions between iTLB miss increased between 11.2% to
+47.4%.
+
+An initial training run of pgbench was run on the x86_64 machine to
+obtain information about relative frequency of call graph paths in the
+code, the sediment tool was used to convert the perf data into a call
+graph.  The call graph file was added to the stock
+postgresql-16.3-3.fc41.x86_64 SRPM and RPMs were built with and
+without enabling the code layout optimization.  Six runs were made
+with each version of the RPMs installed and the results were were
+averaged.  The following script was used to collect data on postgres
+binary when pgbench was running::
 
   #!/bin/sh
   #
@@ -357,9 +376,95 @@ postgres server was monitored with::
   pgb="pgbench"
   su postgres -c "$pgb -c 64 -T 300" &
   sleep 1
-  perf stat -e cycles -e instructions -e iTLB-load-misses -e LLC-load-misses -e minor-faults -e major-faults -e cpu-clock -e task-clock --pid=`pidof /usr/bin/postres|tr " " ","` ./waitforpid.sh `pidof pgbench`
+  perf stat -e cycles -e instructions -e iTLB-load-misses -e LLC-load-misses -e minor-faults -e major-faults -e cpu-clock -e task-clock --pid=`pidof /usr/bin/postgres|tr " " ","` pidwait "$pgb"
 
-Used three Fedora 18 environements: x86_64 raw, x86_64 guest vm, and
+Three Fedora 41 environments were used for the experiments: x86_64
+bare metal, x86_64 guest VM, and an aarch64 cortex a57 machine.  The
+postgres rpms were built locally with and without function reordering.
+The table below summarize the hardware characteristics.
+
+
+=======================	=============	===========	======================
+hardware		 physical	virtual		
+characteristics		 x86_64		x86_64		aarch64
+=======================	=============	===========	======================
+Machine			Lenovo P51	Lenovo P51	NVidia Jeton Nano
+processor manufacter	Intel		Intel		Nvidia
+processor family	6		6		ARM Cortex
+processor model		158		158		A57
+clock			3.00GHz		3.00GHz		1.91GHz
+processor cores		4		2		4
+virtual processors	8		2		4
+ram			32GB		4GB		4GB
+=======================	=============	===========	======================
+
+Below are table for the bare metal x86_64 machine and guest VM on the same
+machine.  The transactions per second (tps) do not change
+significantly.  There appear to be other limitations on the machine
+besides the processor that limit the performance.  It is notable that
+the number of cycles consumed by the postgres binary, the cpu-clock,
+and the task clock for the same wallclock time (5 minutes, 300
+seconds) were are all reduced.  The IPC (Instructions Per Cycle) and
+the average instructions between iTLB misses also improved.
+
+=======================	============    =========== 	=======
+x86_64 physical machine postgresql	postgresql
+metric          	baseline	reordered	%change
+=======================	============    =========== 	=======
+tps (excluding conn)	318.5		319.9		0.43%
+cycles			3.339E+011	3.236E+011	-3.1%
+instructions		1.555E+011	1.567E+011	0.77%
+IPC			.466		.484		4.0%
+Itlb-load-misses	3.600E+008	2.461E+008	-31.6%
+i per iTLB-miss		432		637		47.4%
+Cpu-clock		127,926ms	124,895ms	-2.37%
+Task-clock		130,625ms	127,596ms	-2.32%
+=======================	============    =========== 	=======
+
+=======================	============    =========== 	=======
+x86_64 qemu guest	postgresql	postgresql
+metric          	baseline	reordered	%change
+=======================	============    =========== 	=======
+tps (excluding conn)	230.1		231.5		0.6%
+cycles			3.0751E+011	2.9502E+011	-4.1%
+instructions		1.7732E+011	1.7604E+011	-0.7%
+IPC			.577		.597		3.3%
+Itlb-load-misses	4.736E+008	3.805E+008	-19.7%
+i per iTLB-miss		374		462		23.5%
+Cpu-clock		165,610ms	160,785ms	-2.9%
+Task-clock		167,212ms	162,393ms	-2.9%
+=======================	============    =========== 	=======
+
+
+
+To test the portability of the technique the same postgresql source
+RPM was build on aarch64.  the following table summarizes the results.
+The iTLB-load-misses on the aarch64 only measure the misses in the 48
+element first level instruction TLB.  Like the x86_64 platform the
+aarch64 machine shows reductions in the number of cycles used and
+improvement in the IPC of 6.1%. The average number of instructions
+between iTLB misses also improves, probably due to the relatively
+small size of the L1 iTLB size.
+			
+			
+====================	===========	===========	========
+armv8 cortext a57
+metric			baseline	reordered	%change
+====================	===========	===========	========
+tps (excluding conn)	53.1		51.3		-3.3%
+cycles			1.484E+011	1.356E+011	-8.6%
+instructions		3.509E+10	3.396E+010	-3.2%
+IPC			.236		.250		6.1%
+Itlb-load-misses	1.495E+008	1.292E+008	-13.6%
+i per iTLB-miss		235		263		11.2%
+Cpu-clock		205,022ms	202,764ms	-1.1%
+Task-clock		208,491ms	206,936ms	-0.7%
+====================	===========	===========	========
+
+Older Experiments on Fedora 18
+==============================
+
+Used three Fedora 18 environments: x86_64 raw, x86_64 guest vm, and
 armv7 hard float on armv7 cortex a15 machine.  The postgres rpms were
 built locally with and without function reordering.
 The table below summarize the hardware characteristics.
