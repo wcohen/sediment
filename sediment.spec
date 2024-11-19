@@ -1,6 +1,6 @@
 Name:		sediment
-Version:	0.9.2
-Release:	2%{?dist}
+Version:	0.9.3
+Release:	1%{?dist}
 Summary:	A function reordering tool set
 
 License:	GPL-3.0-or-later
@@ -49,6 +49,9 @@ make
 
 
 %changelog
+* Mon Nov 18 2024 William Cohen <wcohen@redhat.com> - 0.9.3-1
+- Update documentation with Fedora 41 postgres example.
+
 * Mon Nov 4 2024 William Cohen <wcohen@redhat.com> - 0.9.2-2
 - Add make_sediment_rpmmacros and update Makefile.* and configure to include it.
 
