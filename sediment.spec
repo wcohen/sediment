@@ -1,5 +1,5 @@
 Name:		sediment
-Version:	0.9.3
+Version:	0.9.4
 Release:	1%{?dist}
 Summary:	A function reordering tool set
 
@@ -49,6 +49,9 @@ make
 
 
 %changelog
+* Wed Dec 4 2024 William Cohen <wcohen@redhat.com> - 0.9.4-1
+- Eliminate versioning infomation in function names.
+
 * Mon Nov 18 2024 William Cohen <wcohen@redhat.com> - 0.9.3-1
 - Update documentation with Fedora 41 postgres example.
 
