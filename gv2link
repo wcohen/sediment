@@ -140,10 +140,13 @@ def gen_order(in_graph):
     #return simple_order(in_graph)
     return group_order(in_graph)
 
+def strip_versioning(func):
+    return func.split("@")[0]
+
 def print_order(order):
     print(('.text : {'))
     for n in order:
-        print(('  *(.text.%s)' % n))
+        print(('  *(.text.%s)' % strip_versioning(n)))
     #everything else
     print ('  *(.text.*)')
     print(('}'))
