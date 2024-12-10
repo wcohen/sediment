@@ -89,10 +89,8 @@ and TLB misses.
 Requirements
 ============
 
-RPMs are typically the way that code is built and distributed both
-inside and outside of Red Hat.
 The implementation of the function reordering needs to be compatible
-with source RPMs used to build packages.
+with packaging tools such as RPM/dpkg for example.
 
 Where to put the profiling information? Red Hat has a build system to
 produce the RPM.
