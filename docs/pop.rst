@@ -249,8 +249,8 @@ particular files to be weighted more heavily, e.g. adding a new sample
 to an existing sum.
 
 
-RPM Build Method
-================
+RPM Build Methods
+=================
 
 For the reordering to performed on Linux,
 each function needed to be compiled into
@@ -263,6 +263,73 @@ in the exectuable based on the profiling information
 rather than using the default.
 Newer versions of binutils (2.43) include a ld linker with an option
 to specify the order of functions in the executable, "--section-ordering-file".
+The special flags can be included directly in the SRPM's spec file using specific macros.
+Alternatively, a .rpmmacros file can be created to supply the needed options to the compilers and liners.
+
+
+Providing Compiler and Linker Options in a RPM spec file
+--------------------------------------------------------
+
+It is possible to modify a SRPM spec file using the RPM _distro_extra_*
+macros to provide the needed compiler and linker options.
+A example of the changes to python3.13-3.13.0-1.fc41 spec file are contained
+in :download:`python_layout.patch <examples/python_layout.patch>`.
+The first line of the changes allow the build to default to enabling the code layout optimization by default::
+
+  %bcond_without opt
+
+If one wants to disable the code layout optimization, one would build the rpm with::
+
+  rpmbuild --without-opt python3.13.spec
+
+The next few lines added to the spec file are to provide some additional rpm name information,
+so one can identify the RPM as being built with code layout optimization::
+
+  %if %{with opt}
+  %global layout _opt
+  %endif
+
+The Release has the layout suffix to allow easier switching between the code laytout optimized and non-optimized builds::
+
+  Release: 1%{?dist}%{?layout}
+
+The following conditional sets the addition compiler and linker flags needed for the code layout optimization.
+It also adds the dependency on sediment as it is needed to produce information about appropriate
+order to link the code::
+
+  %if %{with opt}
+  # Settings to enable building with code layout optimization
+  BuildRequires: sediment
+  %define _distro_extra_cflags -ffunction-sections -fdata-sections
+  %define _distro_extra_cxxflags -ffunction-sections -fdata-sections
+  %define _distro_extra_fflags -ffunction-sections -fdata-sections
+  
+  %define __global_link_order %{_builddir}/%{name}-%{version}-%{release}.order
+  %define _distro_extra_ldflags -Wl,\"--section-ordering-file,%{__global_link_order}\"
+  %endif
+
+The RPM spec file needs to include the callgraph file which is stored as just another source file.
+The call_graph define points to the file to allow sediment to produce the link order file.::
+
+  # Call graph information
+  SOURCE12: perf_pybenchmark.gv
+  %global call_graph %{SOURCE12}
+
+Finally, in the %prep section of the spec file there is the following coditional to
+generate the link order file.
+This needs be be done before the configuration is done as the linking
+expects the __global_link_order file to exist.
+If the file does not exist, the various steps of configuration will fail.::
+
+  %if %{with opt}
+  #Generate the code layout file before configuration done
+  gv2link < %{call_graph} > %{__global_link_order}
+  %endif
+
+
+Using .rpmmacros File to Supply Need Options
+--------------------------------------------
+
 There is a "make_sediment_rpmmacros" command in sediment to produce appropriate macros that to store in the local .rpmmacros file.
 The RPM macros will be modified using a .rpmmacro file with::
 
@@ -291,7 +358,7 @@ to generate the link order when a call graph is available and pgo
   %{?call_graph:%{?pgo: gv2link < %{call_graph} > %{__global_link_order}  } }
 
 An example for x86_64 the macros above are contained in :download:`.rpmmacros
-<.rpmmacros>`.  Howeve, it is probably better to generate the appropriate RPM macros
+<.rpmmacros>`.  However, it is probably better to generate the appropriate RPM macros
 with the "make_sediment_rpmmacros" output as these are going to vary by architecture
 and Linux distribution.
 The building with the function reordering is enabled with::
