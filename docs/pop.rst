@@ -276,22 +276,15 @@ A example of the changes to python3.13-3.13.0-1.fc41 spec file are contained
 in :download:`python_layout.patch <examples/python_layout.patch>`.
 The first line of the changes allow the build to default to enabling the code layout optimization by default::
 
-  %bcond_without opt
+  %bcond opt 1
 
 If one wants to disable the code layout optimization, one would build the rpm with::
 
   rpmbuild --without-opt python3.13.spec
 
-The next few lines added to the spec file are to provide some additional rpm name information,
-so one can identify the RPM as being built with code layout optimization::
-
-  %if %{with opt}
-  %global layout _opt
-  %endif
-
 The Release has the layout suffix to allow easier switching between the code laytout optimized and non-optimized builds::
 
-  Release: 1%{?dist}%{?layout}
+  Release: 1%{?dist}%{?with_opt:_opt}
 
 The following conditional sets the addition compiler and linker flags needed for the code layout optimization.
 It also adds the dependency on sediment as it is needed to produce information about appropriate
@@ -300,12 +293,12 @@ order to link the code::
   %if %{with opt}
   # Settings to enable building with code layout optimization
   BuildRequires: sediment
-  %define _distro_extra_cflags -ffunction-sections -fdata-sections
-  %define _distro_extra_cxxflags -ffunction-sections -fdata-sections
-  %define _distro_extra_fflags -ffunction-sections -fdata-sections
+  %global _distro_extra_cflags -ffunction-sections -fdata-sections
+  %global _distro_extra_cxxflags -ffunction-sections -fdata-sections
+  %global _distro_extra_fflags -ffunction-sections -fdata-sections
   
-  %define __global_link_order %{_builddir}/%{name}-%{version}-%{release}.order
-  %define _distro_extra_ldflags -Wl,\"--section-ordering-file,%{__global_link_order}\"
+  %global __global_link_order %{_builddir}/%{name}-%{version}-%{release}.order
+  %global _distro_extra_ldflags -Wl,\"--section-ordering-file,%{__global_link_order}\"
   %endif
 
 The RPM spec file needs to include the callgraph file which is stored as just another source file.

@@ -1,43 +1,40 @@
 --- python3.13.spec	2024-10-07 20:00:00.000000000 -0400
-+++ python3.13.spec.newlayout	2025-01-24 10:55:35.680392036 -0500
-@@ -1,3 +1,8 @@
-+%bcond_without opt
-+%if %{with opt}
-+%global layout _opt
-+%endif
++++ python3.13.spec.newlayout	2025-02-04 13:49:05.213017953 -0500
+@@ -1,3 +1,5 @@
++%bcond opt 1
 +
  # ==================
  # Top-level metadata
  # ==================
-@@ -17,7 +22,7 @@
+@@ -17,7 +19,7 @@
  #global prerel ...
  %global upstream_version %{general_version}%{?prerel}
  Version: %{general_version}%{?prerel:~%{prerel}}
 -Release: 1%{?dist}
-+Release: 1%{?dist}%{?layout}
++Release: 1%{?dist}%{?with_opt:_opt}
  License: Python-2.0.1
  
  
-@@ -264,6 +269,18 @@
+@@ -264,6 +266,18 @@
  %define unversioned_obsoletes_of_python3_X_if_main() %{nil}
  %endif
  
 +%if %{with opt}
 +# Settings to enable building with code layout optimization
 +BuildRequires: sediment
-+%define _distro_extra_cflags -ffunction-sections -fdata-sections
-+%define _distro_extra_cxxflags -ffunction-sections -fdata-sections
-+%define _distro_extra_fflags -ffunction-sections -fdata-sections
++%global _distro_extra_cflags -ffunction-sections -fdata-sections
++%global _distro_extra_cxxflags -ffunction-sections -fdata-sections
++%global _distro_extra_fflags -ffunction-sections -fdata-sections
 +
-+%define __global_link_order %{_builddir}/%{name}-%{version}-%{release}.order
-+%define _distro_extra_ldflags -Wl,\"--section-ordering-file,%{__global_link_order}\"
++%global __global_link_order %{_builddir}/%{name}-%{version}-%{release}.order
++%global _distro_extra_ldflags -Wl,\"--section-ordering-file,%{__global_link_order}\"
 +%endif
 +
 +
  # =======================
  # Build-time requirements
  # =======================
-@@ -371,6 +388,10 @@
+@@ -371,6 +385,10 @@
  # AppData file for idle3
  Source11: idle3.appdata.xml
  
@@ -48,13 +45,13 @@
  # (Patches taken from github.com/fedora-python/cpython)
  
  # 00251 # 60dd97be7bf3662ff65edd8471e948924b4175b2
-@@ -784,6 +805,11 @@
+@@ -784,6 +802,11 @@
  %gpgverify -k2 -s1 -d0
  %autosetup -S git_am -n Python-%{upstream_version}
  
 +%if %{with opt}
 +#Generate the code layout file before configuration done
-+gv2link < %{call_graph} > %{__global_link_order}
++gv2link <%{call_graph} >%{__global_link_order}
 +%endif
 +
  # Verify the second level of bundled provides is up to date
