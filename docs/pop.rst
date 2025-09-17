@@ -280,7 +280,7 @@ The first line of the changes allow the build to default to enabling the code la
 
 If one wants to disable the code layout optimization, one would build the rpm with::
 
-  rpmbuild --without-opt python3.13.spec
+  rpmbuild --without opt python3.13.spec
 
 The Release has the layout suffix to allow easier switching between the code laytout optimized and non-optimized builds::
 
